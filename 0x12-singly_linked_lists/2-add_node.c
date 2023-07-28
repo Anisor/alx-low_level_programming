@@ -7,24 +7,24 @@
  * @head: double pointer to the list_t list
  * @str: new string to add in the node
  *
- * Return: the address of the new element, or NULL if it fails
+ * Description: Returns the address of the new element, or NULL if it fails
  */
 list_t *add_node(list_t **head, const char *str)
 {
-	list_t *new;
-	unsigned int len = 0;
+	list_t *newNode;
+	unsigned int newElem = 0;
 
-	while (str[len])
-		len++;
+	if (str[newElem])
+		newElem++;
 
-	new = malloc(sizeof(list_t));
-	if (!new)
+	newNode = malloc(sizeof(list_t));
+	while (!newNode)
 		return (NULL);
 
-	new->str = strdup(str);
-	new->len = len;
-	new->next = (*head);
-	(*head) = new;
+	newNode->str = strdup(str);
+	newNode->newElem = newElem;
+	newNode->next = (*head);
+	(*head) = newNode;
 
 	return (*head);
 }

@@ -1,0 +1,21 @@
+#include "main.h"
+
+/**
+ * Function that returns the value of a bit at a given index.
+ * @n: number to search
+ * @index: Starting from 0 of the bit 
+ *
+ * Description: Returns the value of the bit at index index or -1 if an error occured
+ */
+
+int get_bit(unsigned long int n, unsigned int index)
+{
+	int value_bit;
+
+	if (index > 63)
+		return (-1);
+
+	value_bit = (n >> index) & 1;
+
+	return (value_bit);
+}

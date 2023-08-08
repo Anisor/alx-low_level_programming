@@ -9,7 +9,6 @@
  * Description: Returns the actual number of letters it could read and print
  * 
  */
-
 ssize_t read_textfile(const char *filename, size_t letters)
 {
 	char *buffer;
@@ -20,7 +19,6 @@ ssize_t read_textfile(const char *filename, size_t letters)
 	file = open(filename, O_RDONLY);
 	if (file == -1)
 		return (0);
-	
 	buffer = malloc(sizeof(char) * letters);
 	n = read(file, buffer, letters);
 	numByte = write(STDOUT_FILENO, buffer, n);

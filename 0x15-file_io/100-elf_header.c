@@ -225,7 +225,7 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 	int p, q;
 
 
-	p = = open(argv[1], O_RDONLY);
+	p = open(argv[1], O_RDONLY);
 	if (p == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", argv[1]);
@@ -238,10 +238,10 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", argv[1]);
 		exit(98);
 	}
-	q = read(o, header, sizeof(Elf64_Ehdr));
+	q = read(p, head, sizeof(Elf64_Ehdr));
 	if (q == -1)
 	{
-		free(headr);
+		free(head);
 		close_elf(p);
 		dprintf(STDERR_FILENO, "Error: `%s`: No such file\n", argv[1]);
 		exit(98);
@@ -250,7 +250,7 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 	check_elf(head->e_ident);
 	printf("ELF Header:\n");
 	print_magic(head->e_ident);
-	print_class(head>e_ident);
+	print_class(head->e_ident);
 	print_data(head->e_ident);
 	print_version(head->e_ident);
 	print_osabi(head->e_ident);

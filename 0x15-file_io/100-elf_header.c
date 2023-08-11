@@ -1,54 +1,66 @@
-#include <elf.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <unistd.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <elf.h>
 
+
+void print_entry(unsigned long int e_entry, unsigned char *e_ident);
+void print_type(unsigned int e_type, unsigned char *e_ident);
+void print_version(unsigned char *e_ident);
 void print_magic(unsigned char *e_ident);
+void print_osabi(unsigned char *e_ident);
+void print_class(unsigned char *e_ident);
 void print_data(unsigned char *e_ident);
 void print_abi(unsigned char *e_ident);
-void print_type(unsigned int e_type, unsigned char *e_ident);
-void close_elf(int elf);
-void print_entry(unsigned long int e_entry, unsigned char *e_ident);
-void print_osabi(unsigned char *e_ident);
-void print_version(unsigned char *e_ident);
-void print_class(unsigned char *e_ident);
 void check_elf(unsigned char *e_ident);
+void check_elf(unsigned char *e_ident);
+void close_elf(int elf);
+
+/**
+ *
+ *
+ */
 
 void check_elf(unsigned char *e_ident)
 {
-	int i;
+	int ind;
+	ind = 0;
 
-	for (i = 0; i < 4; i++)
+	while (ind < 4)
 	{
-		if (e_ident[i] != 127 &&
-		    e_ident[i] != 'E' &&
-		    e_ident[i] != 'L' &&
-		    e_ident[i] != 'F')
+		if (e_ident[ind] != 127 &&
+		    e_ident[ind] != 'E' &&
+		    e_ident[ind] != 'L' &&
+		    e_ident[ind] != 'F')
 		{
-			dprintf(STDERR_FILENO, "Error: Not an ELF file\n");
+			dprintf(STDERR_FILENO, "ERROR!:This is not an ELF file\n");
 			exit(98);
 		}
+		ind++;
 	}
 }
 
 
 void print_magic(unsigned char *e_ident)
 {
-	int i;
+	int ind;
 
 	printf(" Magic: ");
-
-	for (i = 0; i < EI_NIDENT; i++)
+	
+	ind = 0;
+	while (ind < EI_NIDENT)
 	{
-		printf("%02x", e_ident[i]);
+		printf("%02x", e_ident[ind]);
 
-		if (i == EI_NIDENT - 1)
+		if (ind == EI_NIDENT - 1)
 			printf("\n");
 		else
 			printf(" ");
+
+		ind++;
 	}
 }
 
@@ -59,6 +71,7 @@ void print_class(unsigned char *e_ident)
 
 	switch (e_ident[EI_CLASS])
 	{
+	
 	case ELFCLASSNONE:
 		printf("none\n");
 		break;
@@ -70,6 +83,7 @@ void print_class(unsigned char *e_ident)
 		break;
 	default:
 		printf("<unknown: %x>\n", e_ident[EI_CLASS]);
+	
 	}
 }
 
@@ -77,7 +91,7 @@ void print_class(unsigned char *e_ident)
 void print_data(unsigned char *e_ident)
 {
 	printf(" Data: ");
-
+	
 	switch (e_ident[EI_DATA])
 	{
 	case ELFDATANONE:
@@ -94,7 +108,10 @@ void print_data(unsigned char *e_ident)
 	}
 }
 
-
+/**
+ *
+ * 
+ * */
 void print_version(unsigned char *e_ident)
 {
 	 printf(" Version: %d",
@@ -111,6 +128,10 @@ void print_version(unsigned char *e_ident)
 	}
 }
 
+/**
+ *
+ *
+ * */
 void print_osabi(unsigned char *e_ident)
 {
 	printf(" OS/ABI: ");
@@ -152,6 +173,10 @@ void print_osabi(unsigned char *e_ident)
 	}
 }
 
+/**
+ *
+ * 
+ * */
 
 void print_abi(unsigned char *e_ident)
 {
@@ -159,6 +184,10 @@ void print_abi(unsigned char *e_ident)
 		e_ident[EI_ABIVERSION]);
 }
 
+/**
+ *
+ *
+ * */
 
 void print_type(unsigned int e_type, unsigned char *e_ident)
 {
@@ -194,11 +223,12 @@ void print_entry(unsigned long int e_entry, unsigned char *e_ident)
 {
 	printf(" Entry point address: ");
 
-	if (e_ident[EI_DATA] == ELFDATA2MSB)
+	while (e_ident[EI_DATA] == ELFDATA2MSB)
 	{
 		e_entry = ((e_entry << 8) & 0xFF00FF00) |
 			  ((e_entry >> 8) & 0xFF00FF);
 		e_entry = (e_entry << 16) | (e_entry >> 16);
+		break;
 	}
 
 	if (e_ident[EI_CLASS] == ELFCLASS32)
@@ -222,11 +252,12 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 {
 
 	Elf64_Ehdr *head;
-	int p, q;
+	int r;
+        int s;
 
 
-	p = open(argv[1], O_RDONLY);
-	if (p == -1)
+	r = open(argv[1], O_RDONLY);
+	if (s == -1)
 	{
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", argv[1]);
 		exit(98);
@@ -234,15 +265,15 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 	head = malloc(sizeof(Elf64_Ehdr));
 	if (head  == NULL)
 	{
-		close_elf(p);
+		close_elf(r);
 		dprintf(STDERR_FILENO, "Error: Can't read file %s\n", argv[1]);
 		exit(98);
 	}
-	q = read(p, head, sizeof(Elf64_Ehdr));
-	if (q == -1)
+	s = read(r, head, sizeof(Elf64_Ehdr));
+	if (s == -1)
 	{
 		free(head);
-		close_elf(p);
+		close_elf(r);
 		dprintf(STDERR_FILENO, "Error: `%s`: No such file\n", argv[1]);
 		exit(98);
 	}
@@ -259,6 +290,6 @@ int main(int __attribute__((__unused__)) argc, char *argv[])
 	print_entry(head->e_entry, head->e_ident);
 
 	free(head);
-	close_elf(p);
+	close_elf(r);
 	return (0);
 }
